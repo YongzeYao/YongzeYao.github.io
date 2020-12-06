@@ -23,11 +23,17 @@ export default defineComponent({
   setup() {
     const store = useStore();
     const router = useRouter();
-    const name = ref<HTMLInputElement>(null);
+    const name = ref<HTMLInputElement | null>(null);
 
     function enterGame() {
-      store.commit('setName', name.value.innerHTML);
+      // check name value
+      if (name.value.value.length === 0) {
+        return alert('Please enter a valid username.');
+      }
+
+      store.commit('setName', name.value?.value);
       // TODO: enter game
+      router.push('/gameRoom');
     }
 
     return {

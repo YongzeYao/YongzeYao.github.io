@@ -10,22 +10,33 @@
 <script lang="ts">
 import { defineComponent, ref } from 'vue';
 import { useRouter } from 'vue-router';
+import axios from 'axios';
 
 import Logo from '../components/Logo.vue';
 import { useStore } from '../store';
+import { serverURL } from '../config';
 
 export default defineComponent({
   components: {
     Logo,
   },
   setup() {
-    const code = ref<HTMLInputElement>(null);
+    const code = ref<HTMLInputElement | null>(null);
     const store = useStore();
     const router = useRouter();
 
-    function next() {
-      store.commit('setRoomId', code.value.value);
-      router.push('/name');
+    async function next() {
+      try {
+        // check whether the room exists
+        await axios.get(`${serverURL}/room/${code.value.value}`);
+
+        store.commit('setRoomId', code.value?.value);
+        router.push('/name');
+      } catch (error) {
+        alert(
+          'Room with entered room ID does not exist. Please enter a valid room ID.'
+        );
+      }
     }
 
     return {
